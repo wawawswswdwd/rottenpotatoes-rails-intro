@@ -21,7 +21,12 @@ class MoviesController < ApplicationController
     session[:sort] = params[:sort]
     @ratings = {}
     if params[:ratings]
+        session[:ratings] = params[:ratings]
         params[:ratings].each_key do |key|
+            @ratings[key] = true
+        end
+    elsif session[:ratings]
+        session[:ratings].each_key do |key|
             @ratings[key] = true
         end
     else
