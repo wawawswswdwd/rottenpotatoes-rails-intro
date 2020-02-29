@@ -38,7 +38,7 @@ class MoviesController < ApplicationController
         @movies = Movie.where(rating: @ratings.keys).order("release_date asc")
         session[:sort] = "date"
     else
-        @movies = Movie.all
+        @movies = Movie.where(rating: @ratings.keys)
     end
   end
 
