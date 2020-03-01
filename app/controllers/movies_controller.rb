@@ -11,37 +11,38 @@ class MoviesController < ApplicationController
   end
 
   def index
-    @all_ratings = Movie.uniq.pluck(:rating);
+    @all_ratings = Movie.all_ratings
     sort = params[:sort]
-    if params[:commit] == "Refresh"
-        sort = session[:sort]
-    elsif @date_class
-        sort = session[:sort]
-    end
-    session[:sort] = params[:sort]
     @ratings = {}
-    if params[:ratings]
-        session[:ratings] = params[:ratings]
-        params[:ratings].each_key do |key|
-            @ratings[key] = true
+    if params[:commit] == "Refresh"
+        sort = flash[:sort]
+        if params[:ratings]
+            flash[:ratings] = params[:ratings]
+            params[:ratings].each_key do |key|
+                @ratings[key] = true
+            end
         end
-    elsif session[:ratings]
-        session[:ratings].each_key do |key|
-            @ratings[key] = true
+    elsif sort
+        if flash[:ratings]
+            flash[:ratings].each_key do |key|
+                @ratings[key] = true
+            end
         end
+        flash[:ratings] = flash[:ratings]
     else
         @all_ratings.each do |key|
             @ratings[key] = true
         end
     end
+
     if sort == "title"
         @title_class = "hilite"
         @movies = Movie.where(rating: @ratings.keys).order("title asc")
-        session[:sort] = "title"
+        flash[:sort] = "title"
     elsif sort == "date"
         @date_class = "hilite"
         @movies = Movie.where(rating: @ratings.keys).order("release_date asc")
-        session[:sort] = "date"
+        flash[:sort] = "date"
     else
         @movies = Movie.where(rating: @ratings.keys)
     end
